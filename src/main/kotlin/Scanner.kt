@@ -7,6 +7,25 @@ class Scanner(
     private var current = 0
     private var line = 1
 
+    private val keywords: Map<String, TokenType> = mapOf(
+        "and" to AND,
+        "class" to CLASS,
+        "else" to ELSE,
+        "false" to FALSE,
+        "for" to FOR,
+        "fun" to FUN,
+        "if" to IF,
+        "nil" to NIL,
+        "or" to OR,
+        "print" to PRINT,
+        "return" to RETURN,
+        "super" to SUPER,
+        "this" to THIS,
+        "var" to VAR,
+        "true" to TRUE,
+        "while" to WHILE
+    )
+
     fun scanTokens(): List<Token> {
         while (!isAtEnd()) {
             start = current
@@ -57,10 +76,59 @@ class Scanner(
             '\r' -> {}
             '\t' -> {}
             '\n' -> line++
+            // string literals
+            '"' -> string()
             else -> {
-                Lox.error(line, "Unexpected character.")
+                if (c.isArabicDigit) {
+                    number()
+                } else if (c.isAlpha) {
+                    identifier()
+                } else {
+                    Lox.error(line, "Unexpected character.")
+                }
             }
         }
+    }
+
+    private fun identifier() {
+        while (peek().isAlphaNumeric) advance()
+        val text = source.substring(start ..< current)
+        val type = keywords[text] ?: IDENTIFIER
+        addToken(type)
+    }
+
+    private fun number() {
+        while (peek().isArabicDigit) advance()
+
+        // look for fractional part
+        if (peek() == '.' && peekNext().isArabicDigit) {
+            advance()
+
+            while (peek().isArabicDigit) advance()
+        }
+
+        addToken(
+            NUMBER,
+            source.substring(start ..< current).toDouble()
+            )
+    }
+
+    private fun string() {
+        while (peek() != '"' && !isAtEnd()) {
+            if (peek() == '\n') line++
+            advance()
+        }
+
+        if (isAtEnd()) {
+            Lox.error(line, "Unterminated string literal")
+            return
+        }
+
+        // the closing
+        advance()
+
+        val literal = source.substring(start + 1 ..< current)
+        addToken(STRING, literal)
     }
 
     private fun match(expected: Char): Boolean {
@@ -74,6 +142,11 @@ class Scanner(
     private fun peek(): Char {
         if (isAtEnd()) return 0.toChar()
         return source[current]
+    }
+
+    private fun peekNext(): Char {
+        if (current + 1 >= source.length) return 0.toChar()
+        return source[current + 1]
     }
 
     private fun isAtEnd(): Boolean =
