@@ -42,7 +42,7 @@ enum class TokenType {
     SUPER,
     THIS,
     TRUE,
-    VAL,
+    VAR,
     WHILE,
 
     EOF
