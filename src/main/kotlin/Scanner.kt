@@ -127,7 +127,7 @@ class Scanner(
         // the closing
         advance()
 
-        val literal = source.substring(start + 1 ..< current)
+        val literal = source.substring(start + 1 ..< current - 1)
         addToken(STRING, literal)
     }
 
