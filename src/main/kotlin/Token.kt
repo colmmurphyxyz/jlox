@@ -6,5 +6,5 @@ class Token(
 ) {
 
     override fun toString(): String =
-        "$type $lexeme $literal"
+        "$type $lexeme $literal line:$line"
 }
