@@ -62,9 +62,22 @@ class Scanner(
                 addToken(if (match('=')) GREATER_EQUAL else GREATER)
             }
             '/' -> {
-                if (match('/')) {
+                if (match('/')) { // inline comment
                     // a comment goes until the end of  the line
-                    while (peek() !='\n' && !isAtEnd()) {
+                    while (peek() != '\n' && !isAtEnd()) {
+                        advance()
+                    }
+                } else if (match('*')) { // multiline comment
+                    while (!(peek() == '*' && peekNext() == '/')) {
+                        if (isAtEnd()) {
+                            Lox.error(line, "Unterminated multi-line comment")
+                        }
+                        if (peek() == '\n') line++
+                        advance()
+                    }
+
+                    // discard multi-line comment terminator "*/"
+                    repeat(2) {
                         advance()
                     }
                 } else {
