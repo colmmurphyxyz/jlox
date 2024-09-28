@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "1.9.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
     application
 }
 
@@ -24,4 +25,5 @@ kotlin {
 
 application {
     mainClass.set("MainKt")
+    executableDir = "bin"
 }
