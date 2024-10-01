@@ -26,6 +26,11 @@ classes = [
 
 -- Util. functions
 
+indent :: Int -> String
+indent n
+    | n == 0 = ""
+    | otherwise = "    " ++ indent (n - 1)
+
 joinWith :: [a] -> [[a]] -> [a]
 joinWith _ [] = []
 joinWith _ [x] = x
@@ -37,7 +42,9 @@ generateAst :: [Class] -> String
 generateAst classes =
     let
         header = "import java.util.List;\n" ++
-            "abstract class Expr {\n"
+            "abstract class Expr {\n" ++
+            generateVisitorInterface classes ++
+            indent 1 ++ "abstract <R> R accept(Visitor<R> visitor);\n"
     in
         header ++
         concatMap defineClass classes ++
@@ -45,10 +52,11 @@ generateAst classes =
 
 defineClass :: Class -> String
 defineClass c =
-    "   static class " ++ className c ++ " extends Expr {\n" ++
+    indent 1 ++ "static class " ++ className c ++ " extends Expr {\n" ++
     generateConstructor c ++
+    generateVisitorImpl c ++
     generateFields c ++
-    "   }\n"
+    indent 1 ++ "}\n"
 
 generateConstructor :: Class -> String
 generateConstructor c =
@@ -67,6 +75,20 @@ generateFields c =
 
 fieldDeclaration :: Field -> String
 fieldDeclaration f = fieldType f ++ " " ++ fieldName f
+
+generateVisitorInterface :: [Class] -> String
+generateVisitorInterface classes =
+    "interface Visitor<R> {\n" ++
+    concatMap (\c -> "R visit" ++ className c ++ "Expr" ++ "(" ++ className c ++ " expr);\n") classes ++
+    "}\n"
+
+generateVisitorImpl :: Class -> String
+generateVisitorImpl c =
+    "@Override\n" ++
+    "<R> R accept(Visitor<R> visitor) {\n" ++
+    "return visitor.visit" ++
+    className c ++ "Expr" ++ "(this);\n"
+    ++ "}\n"
 
 main :: IO ()
 main = do
