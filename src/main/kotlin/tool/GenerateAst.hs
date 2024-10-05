@@ -43,7 +43,7 @@ generateAst :: [Class] -> String
 generateAst classes =
     let
         header = "import java.util.List;\n" ++
-            "abstract class Expr {\n" ++
+            "public abstract class Expr {\n" ++
             generateVisitorInterface classes ++
             indent 1 ++ "abstract <R> R accept(Visitor<R> visitor);\n"
     in
