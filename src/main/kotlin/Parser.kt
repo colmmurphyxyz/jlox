@@ -19,7 +19,14 @@ class Parser(
     }
 
     private fun expression(): Expr {
-        return equality()
+        return ternary()
+//        return equality()
+    }
+
+    private fun ternary(): Expr {
+        var expr = equality()
+
+        return expr
     }
 
     private fun equality(): Expr {
