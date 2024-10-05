@@ -21,7 +21,8 @@ classes = [
     Class "Binary" [Field "Expr" "left", Field "Token" "operator", Field "Expr" "right"],
     Class "Grouping" [Field "Expr" "expression"],
     Class "Literal" [Field "Object" "value"],
-    Class "Unary" [Field "Token" "operator", Field "Expr" "Right"]
+    Class "Unary" [Field "Token" "operator", Field "Expr" "Right"],
+    Class "Ternary" [Field "Expr" "condition", Field "Expr" "left", Field "Expr" "right"]
     ]
 
 -- Util. functions
