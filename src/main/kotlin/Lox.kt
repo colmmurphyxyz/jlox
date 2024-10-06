@@ -52,7 +52,7 @@ class Lox {
 
             // stop if there was a syntax error
             if (hadError) return
-            print("---- AST ----")
+            println("---- AST ----")
             println(AstPrinter().print(expression!!))
         }
 
