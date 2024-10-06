@@ -15,7 +15,7 @@ public abstract class Expr {
 
     abstract <R> R accept(Visitor<R> visitor);
 
-    static class Binary extends Expr {
+    public static class Binary extends Expr {
         Binary(Expr left, Token operator, Expr right) {
             this.left = left;
             this.operator = operator;
@@ -32,7 +32,7 @@ public abstract class Expr {
         final Expr right;
     }
 
-    static class Grouping extends Expr {
+    public static class Grouping extends Expr {
         Grouping(Expr expression) {
             this.expression = expression;
         }
@@ -45,7 +45,7 @@ public abstract class Expr {
         final Expr expression;
     }
 
-    static class Literal extends Expr {
+    public static class Literal extends Expr {
         Literal(Object value) {
             this.value = value;
         }
@@ -58,10 +58,10 @@ public abstract class Expr {
         final Object value;
     }
 
-    static class Unary extends Expr {
-        Unary(Token operator, Expr Right) {
+    public static class Unary extends Expr {
+        Unary(Token operator, Expr right) {
             this.operator = operator;
-            this.Right = Right;
+            this.right = right;
         }
 
         @Override
@@ -70,10 +70,10 @@ public abstract class Expr {
         }
 
         final Token operator;
-        final Expr Right;
+        final Expr right;
     }
 
-    static class Ternary extends Expr {
+    public static class Ternary extends Expr {
         Ternary(Expr condition, Expr left, Expr right) {
             this.condition = condition;
             this.left = left;
