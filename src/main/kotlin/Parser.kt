@@ -26,6 +26,13 @@ class Parser(
     private fun ternary(): Expr {
         var expr = equality()
 
+        if (match(QUESTION_MARK)) {
+            val left = expression()
+            consume(COLON, "Expect ':' after '?'")
+            val right = expression()
+            expr = Expr.Ternary(expr, left, right)
+        }
+
         return expr
     }
 
