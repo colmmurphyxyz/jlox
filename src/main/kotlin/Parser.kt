@@ -81,6 +81,9 @@ class Parser(
     }
 
     private fun unary(): Expr {
+        if (match(PLUS, STAR, SLASH)) {
+            throw error(previous(), "Unexpected binary operator.")
+        }
         if (match(BANG, MINUS)) {
             val operator = previous()
             val right = unary()
