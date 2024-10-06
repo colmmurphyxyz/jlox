@@ -9,7 +9,11 @@ import kotlin.system.exitProcess
 class Lox {
     companion object {
 
+        private val interpreter = Interpreter()
+
         var hadError = false
+        var hadRuntimeError = false
+
         fun main(args: Array<String>) {
             if (args.size > 1) {
                 println("Usage: jlox [script]")
@@ -26,6 +30,7 @@ class Lox {
             val bytes = Files.readAllBytes(Paths.get(path))
             runLox(String(bytes, Charset.defaultCharset()))
             if (hadError) exitProcess(65)
+            if (hadRuntimeError) exitProcess(70)
         }
 
         @Throws(IOException::class)
@@ -54,10 +59,17 @@ class Lox {
             if (hadError) return
             println("---- AST ----")
             println(AstPrinter().print(expression!!))
+
+            interpreter.interpret(expression)
         }
 
         fun error(line: Int, message: String) {
             report(line, "", message)
+        }
+
+        fun runtimeError(error: RuntimeError) {
+            System.err.println("${error.message}\n[line ${error.token.line}]")
+            hadRuntimeError = true
         }
 
         private fun report(line: Int, where: String, message: String) {
