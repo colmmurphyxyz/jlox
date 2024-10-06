@@ -21,7 +21,8 @@ classes = [
     Class "Binary" [Field "Expr" "left", Field "Token" "operator", Field "Expr" "right"],
     Class "Grouping" [Field "Expr" "expression"],
     Class "Literal" [Field "Object" "value"],
-    Class "Unary" [Field "Token" "operator", Field "Expr" "Right"]
+    Class "Unary" [Field "Token" "operator", Field "Expr" "right"],
+    Class "Ternary" [Field "Expr" "condition", Field "Expr" "left", Field "Expr" "right"]
     ]
 
 -- Util. functions
@@ -42,7 +43,7 @@ generateAst :: [Class] -> String
 generateAst classes =
     let
         header = "import java.util.List;\n" ++
-            "abstract class Expr {\n" ++
+            "public abstract class Expr {\n" ++
             generateVisitorInterface classes ++
             indent 1 ++ "abstract <R> R accept(Visitor<R> visitor);\n"
     in
@@ -52,7 +53,7 @@ generateAst classes =
 
 defineClass :: Class -> String
 defineClass c =
-    indent 1 ++ "static class " ++ className c ++ " extends Expr {\n" ++
+    indent 1 ++ "public static class " ++ className c ++ " extends Expr {\n" ++
     generateConstructor c ++
     generateVisitorImpl c ++
     generateFields c ++

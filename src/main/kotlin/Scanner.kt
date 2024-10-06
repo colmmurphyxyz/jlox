@@ -49,6 +49,8 @@ class Scanner(
             '+' -> addToken(PLUS)
             ';' -> addToken(SEMICOLON)
             '*' -> addToken(STAR)
+            '?' -> addToken(QUESTION_MARK)
+            ':' -> addToken(COLON)
             '!' -> {
                 addToken(if (match('=')) BANG_EQUAL else BANG)
             }

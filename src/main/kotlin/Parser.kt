@@ -19,7 +19,21 @@ class Parser(
     }
 
     private fun expression(): Expr {
-        return equality()
+        return ternary()
+//        return equality()
+    }
+
+    private fun ternary(): Expr {
+        var expr = equality()
+
+        if (match(QUESTION_MARK)) {
+            val left = expression()
+            consume(COLON, "Expect ':' after '?'")
+            val right = expression()
+            expr = Expr.Ternary(expr, left, right)
+        }
+
+        return expr
     }
 
     private fun equality(): Expr {
@@ -67,6 +81,9 @@ class Parser(
     }
 
     private fun unary(): Expr {
+        if (match(PLUS, STAR, SLASH)) {
+            throw error(previous(), "Unexpected binary operator.")
+        }
         if (match(BANG, MINUS)) {
             val operator = previous()
             val right = unary()

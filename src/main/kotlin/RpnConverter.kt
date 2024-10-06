@@ -18,4 +18,8 @@ class RpnConverter : Expr.Visitor<String> {
         return "${expr.right.accept(this)} ${expr.operator.lexeme}"
     }
 
+    override fun visitTernaryExpr(expr: Expr.Ternary): String {
+        TODO("Not yet implemented")
+    }
+
 }
