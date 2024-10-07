@@ -63,8 +63,8 @@ class Interpreter : Expr.Visitor<Any> {
             PLUS -> {
                 return if (left is Double && right is Double) {
                     left + right
-                } else if (left is String && right is String) {
-                    left + right
+                } else if (left is String || right is String) {
+                    stringify(left) + stringify(right)
                 } else {
                     throw RuntimeError(expr.operator, "Operands must be two numbers or two strings")
                 }
