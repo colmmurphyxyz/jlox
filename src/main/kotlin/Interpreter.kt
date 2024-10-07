@@ -66,7 +66,9 @@ class Interpreter : Expr.Visitor<Any> {
                 } else if (left is String || right is String) {
                     stringify(left) + stringify(right)
                 } else {
-                    throw RuntimeError(expr.operator, "Operands must be two numbers or two strings")
+                    throw RuntimeError(expr.operator,
+                        "Incompatible operands ${left::class.simpleName} and ${right::class.simpleName} for operator +"
+                    )
                 }
             }
             GREATER -> {
