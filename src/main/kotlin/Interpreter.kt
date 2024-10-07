@@ -17,13 +17,14 @@ class Interpreter : Expr.Visitor<Any> {
     override fun visitUnaryExpr(expr: Expr.Unary): Any? {
         val right = evaluate(expr.right)
 
-        when (expr.operator.type) {
-            BANG -> return !isTruthy(right)
+        return when (expr.operator.type) {
+            BANG -> !isTruthy(right)
             MINUS -> {
                 checkNumberOperand(expr.operator, right)
-                return -(right as Double)
+                -(right as Double)
             }
-            else -> return null
+
+            else -> null
         }
     }
 
@@ -49,50 +50,57 @@ class Interpreter : Expr.Visitor<Any> {
                 checkNumberOperands(expr.operator, left, right)
                 return (left as Double) - (right as Double)
             }
+
             SLASH -> {
                 checkNumberOperands(expr.operator, left, right)
                 if (right as Double == 0.0) {
                     throw ArithmeticError(expr.operator, "Cannot divide by zero.")
                 }
-                return (left as Double) / (right as Double)
+                return (left as Double) / (right)
             }
+
             STAR -> {
                 checkNumberOperands(expr.operator, left, right)
                 return (left as Double) * (right as Double)
             }
+
             PLUS -> {
                 return if (left is Double && right is Double) {
                     left + right
                 } else if (left is String || right is String) {
                     stringify(left) + stringify(right)
                 } else {
-                    throw RuntimeError(expr.operator,
+                    throw RuntimeError(
+                        expr.operator,
                         "Incompatible operands ${left::class.simpleName} and ${right::class.simpleName} for operator +"
                     )
                 }
             }
+
             GREATER -> {
                 checkNumberOperands(expr.operator, left, right)
                 return left as Double > right as Double
             }
+
             GREATER_EQUAL -> {
                 checkNumberOperands(expr.operator, left, right)
                 return left as Double >= right as Double
             }
+
             LESS -> {
                 checkNumberOperands(expr.operator, left, right)
                 return (left as Double) < (right as Double)
             }
+
             LESS_EQUAL -> {
                 checkNumberOperands(expr.operator, left, right)
                 return left as Double <= right as Double
             }
+
             BANG_EQUAL -> return !isEqual(left, right)
             EQUAL_EQUAL -> return isEqual(left, right)
             else -> return null
         }
-
-        return null
     }
 
     override fun visitTernaryExpr(expr: Expr.Ternary): Any? {
@@ -129,7 +137,7 @@ class Interpreter : Expr.Visitor<Any> {
 
     private fun isTruthy(value: Any?): Boolean {
         if (value == null) return false
-        if (value is Boolean) return value as Boolean
+        if (value is Boolean) return value
         return true
     }
 
