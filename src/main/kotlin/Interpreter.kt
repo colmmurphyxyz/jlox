@@ -51,6 +51,9 @@ class Interpreter : Expr.Visitor<Any> {
             }
             SLASH -> {
                 checkNumberOperands(expr.operator, left, right)
+                if (right as Double == 0.0) {
+                    throw ArithmeticError(expr.operator, "Cannot divide by zero.")
+                }
                 return (left as Double) / (right as Double)
             }
             STAR -> {
