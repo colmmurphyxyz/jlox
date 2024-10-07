@@ -37,8 +37,7 @@ class Scanner(
     }
 
     private fun scanToken() {
-        val c: Char = advance()
-        when (c) {
+        when (val c: Char = advance()) {
             '(' -> addToken(LEFT_PAREN)
             ')' -> addToken(RIGHT_PAREN)
             '{' -> addToken(LEFT_BRACE)

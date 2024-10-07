@@ -11,8 +11,8 @@ class Lox {
 
         private val interpreter = Interpreter()
 
-        var hadError = false
-        var hadRuntimeError = false
+        private var hadError = false
+        private var hadRuntimeError = false
 
         fun main(args: Array<String>) {
             if (args.size > 1) {

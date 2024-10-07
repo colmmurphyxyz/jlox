@@ -1,5 +1,4 @@
 import TokenType.*
-import kotlin.system.exitProcess
 
 class Parser(
     private val tokens: List<Token>
