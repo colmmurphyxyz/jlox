@@ -1,35 +1,52 @@
 public abstract class Stmt {
-   interface Visitor<R> {
-      R visitExpressionStmt(Expression stmt);
+    interface Visitor<R> {
+        R visitExpressionStmt(Expression stmt);
 
-      R visitPrintStmt(Print stmt);
-   }
+        R visitPrintStmt(Print stmt);
 
-   abstract <R> R accept(Visitor<R> visitor);
+        R visitVarStmt(Var stmt);
+    }
 
-   public static class Expression extends Stmt {
-      Expression(Expr expr) {
-         this.expr = expr;
-      }
+    abstract <R> R accept(Visitor<R> visitor);
 
-      @Override
-      <R> R accept(Visitor<R> visitor) {
-         return visitor.visitExpressionStmt(this);
-      }
+    public static class Expression extends Stmt {
+        Expression(Expr expression) {
+            this.expression = expression;
+        }
 
-      final Expr expr;
-   }
+        @Override
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitExpressionStmt(this);
+        }
 
-   public static class Print extends Stmt {
-      Print(Expr expression) {
-         this.expression = expression;
-      }
+        final Expr expression;
+    }
 
-      @Override
-      <R> R accept(Visitor<R> visitor) {
-         return visitor.visitPrintStmt(this);
-      }
+    public static class Print extends Stmt {
+        Print(Expr expression) {
+            this.expression = expression;
+        }
 
-      final Expr expression;
-   }
+        @Override
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitPrintStmt(this);
+        }
+
+        final Expr expression;
+    }
+
+    public static class Var extends Stmt {
+        Var(Token name, Expr initializer) {
+            this.name = name;
+            this.initializer = initializer;
+        }
+
+        @Override
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitVarStmt(this);
+        }
+
+        final Token name;
+        final Expr initializer;
+    }
 }
