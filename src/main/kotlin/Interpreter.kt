@@ -1,17 +1,20 @@
 import TokenType.*
 
-class Interpreter : Expr.Visitor<Any> {
+class Interpreter : Expr.Visitor<Any>, Stmt.Visitor<Unit> {
 
-    fun interpret(expression: Expr) {
+    private val environment = Environment()
+
+    fun interpret(statements: List<Stmt>) {
         try {
-            val value = evaluate(expression)
-            println(stringify(value))
+            for (statement in statements) {
+                execute(statement)
+            }
         } catch (error: RuntimeError) {
             Lox.runtimeError(error)
         }
     }
 
-    override fun visitLiteralExpr(expr: Expr.Literal): Any =
+    override fun visitLiteralExpr(expr: Expr.Literal): Any? =
         expr.value
 
     override fun visitUnaryExpr(expr: Expr.Unary): Any? {
@@ -26,6 +29,10 @@ class Interpreter : Expr.Visitor<Any> {
 
             else -> null
         }
+    }
+
+    override fun visitVariableExpr(expr: Expr.Variable): Any? {
+        return environment.get(expr.name)
     }
 
     private fun checkNumberOperand(operator: Token, operand: Any) {
@@ -143,4 +150,31 @@ class Interpreter : Expr.Visitor<Any> {
 
     private fun evaluate(expr: Expr): Any =
         expr.accept(this)
+
+    private fun execute(stmt: Stmt) =
+        stmt.accept(this)
+
+    override fun visitExpressionStmt(stmt: Stmt.Expression) {
+        evaluate(stmt.expression)
+    }
+
+    override fun visitPrintStmt(stmt: Stmt.Print) {
+        val value = evaluate(stmt.expression)
+        println(stringify(value))
+    }
+
+    override fun visitVarStmt(stmt: Stmt.Var) {
+        var value: Any? = null
+        if (stmt.initializer != null) {
+            value = evaluate(stmt.initializer)
+        }
+
+        environment.define(stmt.name.lexeme, value)
+    }
+
+    override fun visitAssignExpr(expr: Expr.Assign): Any {
+        val value = evaluate(expr.value)
+        environment.assign(expr.name, value)
+        return value
+    }
 }

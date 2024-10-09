@@ -19,6 +19,8 @@ data Field = Field {
 -- edit this value to change the Java code outputted by this script
 exprClasses :: [Class]
 exprClasses = [
+    Class "Assign" [Field "Token" "name", Field "Expr" "value"],
+    Class "Variable" [Field "Token" "name"],
     Class "Binary" [Field "Expr" "left", Field "Token" "operator", Field "Expr" "right"],
     Class "Grouping" [Field "Expr" "expression"],
     Class "Literal" [Field "Object" "value"],
@@ -29,7 +31,8 @@ exprClasses = [
 stmtClasses :: [Class]
 stmtClasses = [
     Class "Expression" [Field "Expr" "expression"],
-    Class "Print" [Field "Expr" "expression"]
+    Class "Print" [Field "Expr" "expression"],
+    Class "Var" [Field "Token" "name", Field "Expr" "initializer"]
     ]
 
 -- Util. functions

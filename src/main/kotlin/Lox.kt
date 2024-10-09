@@ -49,18 +49,14 @@ class Lox {
         private fun runLox(source: String) {
             val scanner = Scanner(source)
             val tokens = scanner.scanTokens()
-            println("---- TOKENS ----")
-            println(tokens.joinToString("\n"))
 
             val parser = Parser(tokens)
-            val expression = parser.parse()
+            val statements = parser.parse()
 
             // stop if there was a syntax error
             if (hadError) return
-            println("---- AST ----")
-            println(AstPrinter().print(expression!!))
 
-            interpreter.interpret(expression)
+            interpreter.interpret(statements)
         }
 
         fun error(line: Int, message: String) {
