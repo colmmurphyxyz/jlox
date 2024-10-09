@@ -2,6 +2,7 @@ module Main where
 
 import Prelude
 import System.Environment (getArgs)
+import Data.Char(toLower)
 
 -- Data Types
 data Class = Class {
@@ -16,13 +17,19 @@ data Field = Field {
 
 -- definitions
 -- edit this value to change the Java code outputted by this script
-classes :: [Class]
-classes = [
+exprClasses :: [Class]
+exprClasses = [
     Class "Binary" [Field "Expr" "left", Field "Token" "operator", Field "Expr" "right"],
     Class "Grouping" [Field "Expr" "expression"],
     Class "Literal" [Field "Object" "value"],
     Class "Unary" [Field "Token" "operator", Field "Expr" "right"],
     Class "Ternary" [Field "Expr" "condition", Field "Expr" "left", Field "Expr" "right"]
+    ]
+
+stmtClasses :: [Class]
+stmtClasses = [
+    Class "Expression" [Field "Expr" "expression"],
+    Class "Print" [Field "Expr" "expression"]
     ]
 
 -- Util. functions
@@ -37,25 +44,28 @@ joinWith _ [] = []
 joinWith _ [x] = x
 joinWith sep (x:xs) = x ++ sep ++ joinWith sep xs
 
+lowercase :: String -> String
+lowercase = map toLower
+
 -- logic
 
-generateAst :: [Class] -> String
-generateAst classes =
+generateAst :: String -> [Class] -> String
+generateAst baseName classes =
     let
         header = "import java.util.List;\n" ++
-            "public abstract class Expr {\n" ++
-            generateVisitorInterface classes ++
+            "public abstract class " ++ baseName ++ " {\n" ++
+            generateVisitorInterface baseName classes ++
             indent 1 ++ "abstract <R> R accept(Visitor<R> visitor);\n"
     in
         header ++
-        concatMap defineClass classes ++
+        concatMap (defineClass baseName) classes ++
         "}\n"
 
-defineClass :: Class -> String
-defineClass c =
-    indent 1 ++ "public static class " ++ className c ++ " extends Expr {\n" ++
+defineClass :: String -> Class -> String
+defineClass baseName c =
+    indent 1 ++ "public static class " ++ className c ++ " extends " ++ baseName ++ " {\n" ++
     generateConstructor c ++
-    generateVisitorImpl c ++
+    generateVisitorImpl baseName c ++
     generateFields c ++
     indent 1 ++ "}\n"
 
@@ -65,7 +75,6 @@ generateConstructor c =
     className c ++
     "(" ++
     joinWith ", " (map fieldDeclaration (fields c)) ++
-    -- concatMap fieldDeclaration (fields c) ++
     ") {\n" ++
     concatMap (\f -> "          this." ++ fieldName f ++ " = " ++ fieldName f ++ ";\n") (fields c) ++
     "       }\n"
@@ -77,23 +86,25 @@ generateFields c =
 fieldDeclaration :: Field -> String
 fieldDeclaration f = fieldType f ++ " " ++ fieldName f
 
-generateVisitorInterface :: [Class] -> String
-generateVisitorInterface classes =
-    "interface Visitor<R> {\n" ++
-    concatMap (\c -> "R visit" ++ className c ++ "Expr" ++ "(" ++ className c ++ " expr);\n") classes ++
-    "}\n"
+generateVisitorInterface :: String -> [Class] -> String
+generateVisitorInterface baseName classes =
+    indent 1 ++ "interface Visitor<R> {\n" ++
+    concatMap (\c -> indent 2 ++ "R visit" ++ className c ++ baseName ++ "(" ++ className c ++ " " ++ lowercase baseName ++ ");\n") classes ++
+    indent 1 ++ "}\n"
 
-generateVisitorImpl :: Class -> String
-generateVisitorImpl c =
+generateVisitorImpl :: String -> Class -> String
+generateVisitorImpl baseName c =
     "@Override\n" ++
     "<R> R accept(Visitor<R> visitor) {\n" ++
     "return visitor.visit" ++
-    className c ++ "Expr" ++ "(this);\n"
+    className c ++ baseName ++ "(this);\n"
     ++ "}\n"
 
 main :: IO ()
 main = do
     args <- getArgs
     case args of
-        [x] -> let outputFile = x in writeFile outputFile (generateAst classes)
-        _ -> error "Usage: generateAst <output file>"
+        [exprOutput, stmtOutput] -> do
+            writeFile exprOutput (generateAst "Expr" exprClasses)
+            writeFile stmtOutput (generateAst "Stmt" stmtClasses)
+        _ -> error "Usage: generateAst <Expr file> <Stmt file>"
