@@ -30,4 +30,12 @@ class AstPrinter : Expr.Visitor<String> {
         builder.append(")")
         return builder.toString()
     }
+
+    override fun visitAssignExpr(expr: Expr.Assign?): String {
+        TODO("Not yet implemented")
+    }
+
+    override fun visitVariableExpr(expr: Expr.Variable?): String {
+        TODO("Not yet implemented")
+    }
 }

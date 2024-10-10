@@ -3,6 +3,7 @@ class RpnConverter : Expr.Visitor<String> {
     fun convertToRpn(expr: Expr): String {
         return expr.accept(this)
     }
+
     override fun visitBinaryExpr(expr: Expr.Binary): String =
         "${expr.left.accept(this)} ${expr.right.accept(this)} ${expr.operator.lexeme}"
 
@@ -19,6 +20,14 @@ class RpnConverter : Expr.Visitor<String> {
     }
 
     override fun visitTernaryExpr(expr: Expr.Ternary): String {
+        TODO("Not yet implemented")
+    }
+
+    override fun visitAssignExpr(expr: Expr.Assign?): String {
+        TODO("Not yet implemented")
+    }
+
+    override fun visitVariableExpr(expr: Expr.Variable?): String {
         TODO("Not yet implemented")
     }
 

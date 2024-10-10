@@ -50,6 +50,9 @@ class Lox {
             val scanner = Scanner(source)
             val tokens = scanner.scanTokens()
 
+            println("---- HTML ----")
+            println(HtmlFormatter(tokens).format())
+
             val parser = Parser(tokens)
             val statements = parser.parse()
 

@@ -4,6 +4,14 @@ class Transpiler : Expr.Visitor<String> {
     fun transpile(expr: Expr): String =
         expr.accept(this)
 
+    override fun visitAssignExpr(expr: Expr.Assign?): String {
+        TODO("Not yet implemented")
+    }
+
+    override fun visitVariableExpr(expr: Expr.Variable?): String {
+        TODO("Not yet implemented")
+    }
+
     override fun visitBinaryExpr(expr: Expr.Binary): String =
         "${expr.left.accept(this)} ${expr.operator.lexeme} ${expr.right.accept(this)}"
 
