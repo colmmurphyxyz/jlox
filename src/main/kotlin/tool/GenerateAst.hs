@@ -30,6 +30,7 @@ exprClasses = [
 
 stmtClasses :: [Class]
 stmtClasses = [
+    Class "Block" [Field "List<Stmt>" "statements"],
     Class "Expression" [Field "Expr" "expression"],
     Class "Print" [Field "Expr" "expression"],
     Class "Var" [Field "Token" "name", Field "Expr" "initializer"]

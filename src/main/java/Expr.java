@@ -1,3 +1,5 @@
+import java.util.List;
+
 public abstract class Expr {
     interface Visitor<R> {
         R visitAssignExpr(Assign expr);
