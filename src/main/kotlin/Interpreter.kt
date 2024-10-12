@@ -2,7 +2,7 @@ import TokenType.*
 
 class Interpreter : Expr.Visitor<Any>, Stmt.Visitor<Unit> {
 
-    private val environment = Environment()
+    private var environment = Environment()
 
     fun interpret(statements: List<Stmt>) {
         try {
@@ -153,6 +153,22 @@ class Interpreter : Expr.Visitor<Any>, Stmt.Visitor<Unit> {
 
     private fun execute(stmt: Stmt) =
         stmt.accept(this)
+
+    private fun executeBlock(statements: List<Stmt>, blockEnv: Environment) {
+        val previousEnv = environment
+        try {
+            environment = blockEnv
+            for (statement in statements) {
+                execute(statement)
+            }
+        } finally {
+            environment = previousEnv
+        }
+    }
+
+    override fun visitBlockStmt(stmt: Stmt.Block) {
+        executeBlock(stmt.statements, Environment(environment))
+    }
 
     override fun visitExpressionStmt(stmt: Stmt.Expression) {
         evaluate(stmt.expression)

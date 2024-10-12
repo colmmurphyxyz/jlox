@@ -25,5 +25,4 @@ kotlin {
 
 application {
     mainClass.set("MainKt")
-    executableDir = "bin"
 }

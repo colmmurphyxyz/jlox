@@ -50,12 +50,16 @@ class Lox {
             val scanner = Scanner(source)
             val tokens = scanner.scanTokens()
 
+            println("--- TOKENS ---")
+            println(tokens.joinToString("\n"))
+
             val parser = Parser(tokens)
             val statements = parser.parse()
 
             // stop if there was a syntax error
             if (hadError) return
 
+            println("--- PROGRAM OUTPUT ---")
             interpreter.interpret(statements)
         }
 
