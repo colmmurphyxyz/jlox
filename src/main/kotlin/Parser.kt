@@ -66,7 +66,7 @@ class Parser(
     }
 
     private fun assignment(): Expr {
-        val expr = equality()
+        val expr = ternary()
 
         if (match(EQUAL)) {
             val equals = previous()

@@ -1,4 +1,10 @@
-class Environment {
+class Environment(
+    val enclosing: Environment?
+) {
+
+    // secondary constructor
+    constructor() : this(null)
+
     private val values = HashMap<String, Any?>()
 
     fun define(name: String, value: Any?) {
@@ -21,6 +27,8 @@ class Environment {
         if (values.containsKey(name.lexeme)) {
             return values[name.lexeme]
         }
+        // if name does not exist, retrieve it from the enclosing environment, recursively
+        if (enclosing != null) return enclosing.get(name)
         throw RuntimeError(
             name,
             "Undefined variable '${name.lexeme}'s"
