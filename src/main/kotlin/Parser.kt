@@ -17,14 +17,13 @@ class Parser(
             declaration()?.let {
                 statements.add(it)
             }
-//            statements.add(declaration())
         }
 
         return statements
     }
 
     private fun expression(): Expr {
-        return ternary()
+        return assignment()
     }
 
     private fun declaration(): Stmt? {
@@ -61,7 +60,7 @@ class Parser(
     }
 
     private fun expressionStatement(): Stmt {
-        val expr = ternary()
+        val expr = assignment()
         consume(SEMICOLON, "Expect ';' after value.")
         return Stmt.Expression(expr)
     }
@@ -169,7 +168,7 @@ class Parser(
     private fun primary(): Expr {
         if (match(FALSE)) return Expr.Literal(false)
         if (match(TRUE)) return Expr.Literal(true)
-        if (match(NIL)) return Expr.Literal(null)
+        if (match(NIL)) return Expr.Literal(Nil)
 
         if (match(NUMBER, STRING)) {
             return Expr.Literal(previous().literal)

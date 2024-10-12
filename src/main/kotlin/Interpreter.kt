@@ -126,7 +126,7 @@ class Interpreter : Expr.Visitor<Any>, Stmt.Visitor<Unit> {
     }
 
     private fun stringify(value: Any?): String {
-        if (value == null) return "nil"
+        if (value == null || value is Nil) return "nil"
 
         if (value is Double) {
             val text = value.toString().let {
@@ -143,7 +143,7 @@ class Interpreter : Expr.Visitor<Any>, Stmt.Visitor<Unit> {
     }
 
     private fun isTruthy(value: Any?): Boolean {
-        if (value == null) return false
+        if (value == null || value is Nil) return false
         if (value is Boolean) return value
         return true
     }
@@ -180,7 +180,7 @@ class Interpreter : Expr.Visitor<Any>, Stmt.Visitor<Unit> {
     }
 
     override fun visitVarStmt(stmt: Stmt.Var) {
-        var value: Any? = null
+        var value: Any = Nil
         if (stmt.initializer != null) {
             value = evaluate(stmt.initializer)
         }

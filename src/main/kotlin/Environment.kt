@@ -5,9 +5,9 @@ class Environment(
     // secondary constructor
     constructor() : this(null)
 
-    private val values = HashMap<String, Any?>()
+    private val values = HashMap<String, Any>()
 
-    fun define(name: String, value: Any?) {
+    fun define(name: String, value: Any) {
         values[name] = value
     }
 
