@@ -35,7 +35,8 @@ stmtClasses = [
     Class "Expression" [Field "Expr" "expression"],
     Class "If" [Field "Expr" "condition", Field "Stmt" " thenBranch", Field "Stmt" "elseBranch"],
     Class "Print" [Field "Expr" "expression"],
-    Class "Var" [Field "Token" "name", Field "Expr" "initializer"]
+    Class "Var" [Field "Token" "name", Field "Expr" "initializer"],
+    Class "While" [Field "Expr" "condition", Field "Stmt" "Body"]
     ]
 
 -- Util. functions
