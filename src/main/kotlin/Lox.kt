@@ -53,11 +53,15 @@ class Lox {
             println("--- TOKENS ---")
             println(tokens.joinToString("\n"))
 
+            println("Parsing...")
             val parser = Parser(tokens)
             val statements = parser.parse()
 
             // stop if there was a syntax error
-            if (hadError) return
+            if (hadError) {
+                println("Parse errors encountered. Terminating.")
+                return
+            }
 
             println("--- PROGRAM OUTPUT ---")
             interpreter.interpret(statements)
