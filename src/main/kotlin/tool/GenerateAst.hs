@@ -32,6 +32,7 @@ stmtClasses :: [Class]
 stmtClasses = [
     Class "Block" [Field "List<Stmt>" "statements"],
     Class "Expression" [Field "Expr" "expression"],
+    Class "If" [Field "Expr" "condition", Field "Stmt" " thenBranch", Field "Stmt" "elseBranch"],
     Class "Print" [Field "Expr" "expression"],
     Class "Var" [Field "Token" "name", Field "Expr" "initializer"]
     ]
