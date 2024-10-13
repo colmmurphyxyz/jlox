@@ -17,6 +17,20 @@ class Interpreter : Expr.Visitor<Any>, Stmt.Visitor<Unit> {
     override fun visitLiteralExpr(expr: Expr.Literal): Any? =
         expr.value
 
+    override fun visitLogicalExpr(expr: Expr.Logical): Any? {
+        val left = evaluate(expr.left)
+
+        if (expr.operator.type == OR) {
+            // no need to evaluate RHS if LHS is truthy
+            if (isTruthy(left)) return left
+        } else {
+            // if LHS of and operator is falsey, we don't need to evaluate the RHS
+            if (!isTruthy(left)) return left
+        }
+
+        return evaluate(expr.right)
+    }
+
     override fun visitUnaryExpr(expr: Expr.Unary): Any? {
         val right = evaluate(expr.right)
 

@@ -93,7 +93,7 @@ class Parser(
     }
 
     private fun assignment(): Expr {
-        val expr = ternary()
+        val expr = or()
 
         if (match(EQUAL)) {
             val equals = previous()
@@ -110,7 +110,30 @@ class Parser(
         return expr
     }
 
+    private fun or(): Expr {
+        var expr = and()
+        while (match(OR)) {
+            val operator = previous()
+            val right = and()
+            expr = Expr.Logical(expr, operator, right)
+        }
+
+        return expr
+    }
+
+    private fun and(): Expr {
+        var expr = equality()
+        while (match(AND)) {
+            val operator = previous()
+            val right = equality()
+            expr = Expr.Logical(expr, operator, right)
+        }
+
+        return expr
+    }
+
     private fun ternary(): Expr {
+        // TODO: Ternary statements should not be instances of `Expr` and should not be evaluated by the parser
         var expr = equality()
 
         if (match(QUESTION_MARK)) {
