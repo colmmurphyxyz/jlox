@@ -17,6 +17,11 @@ class Environment(
             return
         }
 
+        if (enclosing != null) {
+            enclosing.assign(name, value)
+            return
+        }
+
         throw RuntimeError(
             name,
             "Undefined variable '${name.lexeme}'."
@@ -27,8 +32,10 @@ class Environment(
         if (values.containsKey(name.lexeme)) {
             return values[name.lexeme]
         }
+
         // if name does not exist, retrieve it from the enclosing environment, recursively
         if (enclosing != null) return enclosing.get(name)
+
         throw RuntimeError(
             name,
             "Undefined variable '${name.lexeme}'s"
