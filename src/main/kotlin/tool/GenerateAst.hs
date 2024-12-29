@@ -22,6 +22,7 @@ exprClasses = [
     Class "Assign" [Field "Token" "name", Field "Expr" "value"],
     Class "Variable" [Field "Token" "name"],
     Class "Binary" [Field "Expr" "left", Field "Token" "operator", Field "Expr" "right"],
+    Class "Call" [Field "Expr" "callee", Field "Token" "paren", Field "List<Expr>" "arguments"],
     Class "Grouping" [Field "Expr" "expression"],
     Class "Literal" [Field "Object" "value"],
     Class "Logical" [Field "Expr" "left", Field "Token" "operator", Field "Expr" "right"],
@@ -34,8 +35,10 @@ stmtClasses = [
     Class "Block" [Field "List<Stmt>" "statements"],
     Class "Break" [],
     Class "Expression" [Field "Expr" "expression"],
+    Class "Function" [Field "Token" "name", Field "List<Token>" "params", Field "List<Stmt>" "body"],
     Class "If" [Field "Expr" "condition", Field "Stmt" " thenBranch", Field "Stmt" "elseBranch"],
     Class "Print" [Field "Expr" "expression"],
+    Class "Return" [Field "Token" "keyword", Field "Expr" "value"],
     Class "Var" [Field "Token" "name", Field "Expr" "initializer"],
     Class "While" [Field "Expr" "condition", Field "Stmt" "Body"]
     ]

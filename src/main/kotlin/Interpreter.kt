@@ -6,7 +6,19 @@ class Interpreter : Expr.Visitor<Any>, Stmt.Visitor<Unit> {
         class BreakStatementException: RuntimeException()
     }
 
-    private var environment = Environment()
+    val globals = Environment()
+    private var environment = globals
+
+    init {
+        globals.define("clock", object : LoxCallable {
+            override val arity: Int = 1
+            override fun call(interpreter: Interpreter, arguments: List<Any>) =
+                (System.currentTimeMillis() / 1000.0).toDouble()
+
+            override fun toString(): String =
+                "<native fn>"
+        })
+    }
 
     fun interpret(statements: List<Stmt>) {
         try {
@@ -128,6 +140,20 @@ class Interpreter : Expr.Visitor<Any>, Stmt.Visitor<Unit> {
         }
     }
 
+    override fun visitCallExpr(expr: Expr.Call): Any? {
+        val callee = evaluate(expr.callee)
+        val arguments = expr.arguments.map(::evaluate)
+
+        if (callee !is LoxCallable) {
+            throw RuntimeError(expr.paren, "Can only call functions and classes")
+        }
+        if (arguments.size != callee.arity) {
+            throw RuntimeError(expr.paren, "Expected ${callee.arity} arguments but got ${arguments.size}.")
+        }
+
+        return callee.call(this, arguments)
+    }
+
     override fun visitTernaryExpr(expr: Expr.Ternary): Any? {
         return if (isTruthy(evaluate(expr.condition))) {
             expr.left.accept(this)
@@ -172,7 +198,7 @@ class Interpreter : Expr.Visitor<Any>, Stmt.Visitor<Unit> {
     private fun execute(stmt: Stmt) =
         stmt.accept(this)
 
-    private fun executeBlock(statements: List<Stmt>, blockEnv: Environment) {
+    fun executeBlock(statements: List<Stmt>, blockEnv: Environment) {
         val previousEnv = environment
         try {
             environment = blockEnv
@@ -192,6 +218,11 @@ class Interpreter : Expr.Visitor<Any>, Stmt.Visitor<Unit> {
         evaluate(stmt.expression)
     }
 
+    override fun visitFunctionStmt(stmt: Stmt.Function) {
+        val function = LoxFunction(stmt, environment)
+        environment.define(stmt.name.lexeme, function)
+    }
+
     override fun visitIfStmt(stmt: Stmt.If) {
         if (isTruthy(evaluate(stmt.condition))) {
             execute(stmt.thenBranch)
@@ -203,6 +234,15 @@ class Interpreter : Expr.Visitor<Any>, Stmt.Visitor<Unit> {
     override fun visitPrintStmt(stmt: Stmt.Print) {
         val value = evaluate(stmt.expression)
         println(stringify(value))
+    }
+
+    override fun visitReturnStmt(stmt: Stmt.Return) {
+        var value: Any? = null
+        if (stmt.value != null) {
+            value = evaluate(stmt.value)
+        }
+
+        throw Return(value)
     }
 
     override fun visitVarStmt(stmt: Stmt.Var) {
