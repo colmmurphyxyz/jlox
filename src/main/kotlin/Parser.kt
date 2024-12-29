@@ -38,12 +38,19 @@ class Parser(
     }
 
     private fun statement(): Stmt {
+        if (match(BREAK)) return breakStatement()
         if (match(FOR)) return forStatement()
         if (match(IF)) return ifStatement()
         if (match(PRINT)) return printStatement()
         if (match(WHILE)) return whileStatement()
         if (match(LEFT_BRACE)) return Stmt.Block(block())
         return expressionStatement()
+    }
+
+    private fun breakStatement(): Stmt {
+        consume(SEMICOLON, "Expect ';' after break statement.")
+
+        return Stmt.Break()
     }
 
     private fun forStatement(): Stmt {

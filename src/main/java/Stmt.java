@@ -4,6 +4,8 @@ public abstract class Stmt {
     interface Visitor<R> {
         R visitBlockStmt(Block stmt);
 
+        R visitBreakStmt(Break stmt);
+
         R visitExpressionStmt(Expression stmt);
 
         R visitIfStmt(If stmt);
@@ -28,6 +30,16 @@ public abstract class Stmt {
         }
 
         final List<Stmt> statements;
+    }
+
+    public static class Break extends Stmt {
+        Break() {
+        }
+
+        @Override
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitBreakStmt(this);
+        }
     }
 
     public static class Expression extends Stmt {

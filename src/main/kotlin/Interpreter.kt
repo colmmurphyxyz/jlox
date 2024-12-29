@@ -2,6 +2,10 @@ import TokenType.*
 
 class Interpreter : Expr.Visitor<Any>, Stmt.Visitor<Unit> {
 
+    companion object {
+        class BreakStatementException: RuntimeException()
+    }
+
     private var environment = Environment()
 
     fun interpret(statements: List<Stmt>) {
@@ -210,10 +214,19 @@ class Interpreter : Expr.Visitor<Any>, Stmt.Visitor<Unit> {
         environment.define(stmt.name.lexeme, value)
     }
 
+    override fun visitBreakStmt(stmt: Stmt.Break) {
+        throw BreakStatementException()
+    }
+
     override fun visitWhileStmt(stmt: Stmt.While) {
         println("visitWhileStmt")
         while (isTruthy(evaluate(stmt.condition))) {
-            execute(stmt.Body)
+            try {
+                execute(stmt.Body)
+            } catch (e: BreakStatementException) {
+                print("break")
+                break
+            }
         }
     }
 
