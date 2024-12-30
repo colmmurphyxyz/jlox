@@ -63,6 +63,17 @@ class Lox {
                 return
             }
 
+            val resolver = Resolver(interpreter)
+            resolver.resolve(statements)
+
+            if (hadError) {
+                println("Resolution errors encountered. Terminating.")
+                return
+            }
+
+            println("--- SYNTAX TREE ---")
+            println(AstPrinter().printAst(statements))
+
             println("--- PROGRAM OUTPUT ---")
             interpreter.interpret(statements)
         }

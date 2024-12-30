@@ -1,5 +1,5 @@
 class Environment(
-    val enclosing: Environment?
+    private val enclosing: Environment?
 ) {
 
     // secondary constructor
@@ -9,6 +9,22 @@ class Environment(
 
     fun define(name: String, value: Any) {
         values[name] = value
+    }
+
+    private fun ancestor(distance: Int): Environment {
+        return if (distance == 0) {
+            this
+        } else {
+            enclosing!!.ancestor(distance - 1)
+        }
+    }
+
+    fun getAt(distance: Int, name: String): Any? {
+        return ancestor(distance).values[name]
+    }
+
+    fun assignAt(distance: Int, name: Token, value: Any) {
+        ancestor(distance).values[name.lexeme] = value
     }
 
     fun assign(name: Token, value: Any) {
