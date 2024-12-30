@@ -1,0 +1,13 @@
+fun count(n) {
+    if (n > 1) {
+        count(n - 1);
+    }
+    print n;
+}
+
+var start = clock();
+count(100);
+sleep(1000);
+var end = clock();
+var time = end - start;
+print time;
