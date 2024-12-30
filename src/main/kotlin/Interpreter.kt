@@ -11,12 +11,23 @@ class Interpreter : Expr.Visitor<Any>, Stmt.Visitor<Unit> {
 
     init {
         globals.define("clock", object : LoxCallable {
-            override val arity: Int = 1
+            override val arity: Int = 0
             override fun call(interpreter: Interpreter, arguments: List<Any>) =
                 (System.currentTimeMillis() / 1000.0).toDouble()
 
             override fun toString(): String =
-                "<native fn>"
+                "<native fn clock>"
+        })
+
+        globals.define("sleep", object : LoxCallable {
+            override val arity: Int = 1
+            override fun call(interpreter: Interpreter, arguments: List<Any>) {
+                val time = (arguments.first() as Double).toLong()
+                Thread.sleep(time)
+            }
+
+            override fun toString(): String =
+                "<native fn sleep>"
         })
     }
 
