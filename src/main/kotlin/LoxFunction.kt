@@ -1,5 +1,3 @@
-import jdk.javadoc.internal.doclint.Env
-
 class LoxFunction(
     private val declaration: Stmt.Function,
     private val closure: Environment
