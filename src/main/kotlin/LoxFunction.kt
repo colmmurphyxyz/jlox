@@ -14,7 +14,7 @@ class LoxFunction(
         } catch (returnValue: Return) {
             return returnValue.value
         }
-        return null
+        return Nil
     }
 
     override fun toString(): String =
