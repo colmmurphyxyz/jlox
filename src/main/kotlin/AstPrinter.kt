@@ -1,33 +1,171 @@
-class AstPrinter : Expr.Visitor<String> {
-    fun print(expr: Expr): String {
-        return expr.accept(this)
+class AstPrinter : Expr.Visitor<String>, Stmt.Visitor<String> {
+    private var indentationLevel = 0
+
+    private operator fun String.times(rhs: Int): String =
+        Array(rhs) { this }.joinToString(separator = "")
+
+    private fun indent(s: String): String {
+        return "  " * indentationLevel + s
     }
 
-    override fun visitBinaryExpr(expr: Expr.Binary): String =
-        parenthesize(expr.operator.lexeme, expr.left, expr.right)
-
-    override fun visitGroupingExpr(expr: Expr.Grouping): String =
-        parenthesize("group", expr.expression)
-
-    override fun visitLiteralExpr(expr: Expr.Literal): String =
-        if (expr.value == null) "nil" else expr.value.toString()
-
-    override fun visitUnaryExpr(expr: Expr.Unary): String =
-        parenthesize(expr.operator.lexeme, expr.right)
-
-    override fun visitTernaryExpr(expr: Expr.Ternary): String =
-        parenthesize("Ternary", expr.condition, expr.left, expr.right)
-
-    private fun parenthesize(name: String, vararg exprs: Expr): String {
-        val builder = StringBuilder()
-        builder
-            .append("(")
-            .append(name)
-        for (expr in exprs) {
-            builder.append(" ")
-            builder.append(expr.accept(this))
+    fun printAst(statements: List<Stmt>): String {
+        indentationLevel = 0
+        return statements.joinToString("\n") {
+            it.accept(this)
         }
-        builder.append(")")
-        return builder.toString()
     }
+
+    override fun visitAssignExpr(expr: Expr.Assign): String {
+        indentationLevel++
+        val assignment = listOf(
+            "assignment",
+            indent(expr.name.lexeme),
+            indent(expr.value.accept(this))
+        )
+        indentationLevel--
+        return assignment.joinToString("\n")
+    }
+
+    override fun visitVariableExpr(expr: Expr.Variable): String =
+        expr.name.lexeme
+
+    override fun visitBinaryExpr(expr: Expr.Binary): String {
+        indentationLevel++
+        val expression = listOf(
+            expr.operator.lexeme,
+            indent(expr.left.accept(this)),
+            indent(expr.right.accept(this))
+        )
+        indentationLevel--
+        return expression.joinToString("\n")
+    }
+
+    override fun visitCallExpr(expr: Expr.Call): String {
+        indentationLevel++
+        val call = listOf(
+            expr.callee.accept(this),
+            (expr.arguments.map { indent(it.accept(this)) }).joinToString("\n")
+        )
+        indentationLevel--
+        return call.joinToString("\n")
+    }
+
+    override fun visitGroupingExpr(expr: Expr.Grouping): String {
+        indentationLevel++
+        val grouping = listOf(
+            "grouping",
+            indent(expr.expression.accept(this))
+        )
+        indentationLevel--
+        return grouping.joinToString("\n")
+    }
+
+    override fun visitLiteralExpr(expr: Expr.Literal): String {
+        return expr.value.toString()
+    }
+
+    override fun visitLogicalExpr(expr: Expr.Logical): String {
+        indentationLevel++
+        val expression = listOf(
+            expr.operator.lexeme,
+            indent(expr.left.accept(this)),
+            indent(expr.right.accept(this))
+        )
+        indentationLevel--
+        return expression.joinToString("\n")
+    }
+
+    override fun visitUnaryExpr(expr: Expr.Unary): String {
+        indentationLevel++
+        val unary = listOf(
+            "unary",
+            indent(expr.operator.lexeme),
+            indent(expr.right.accept(this))
+        )
+        indentationLevel--
+        return unary.joinToString("\n")
+    }
+
+    override fun visitTernaryExpr(expr: Expr.Ternary?): String {
+        TODO("Not yet implemented")
+    }
+
+    override fun visitBlockStmt(stmt: Stmt.Block): String {
+        indentationLevel++
+        val block = listOf(
+            "block",
+            stmt.statements.map { indent(it.accept(this)) }.joinToString("\n")
+        )
+        indentationLevel--
+        return block.joinToString("\n")
+    }
+
+    override fun visitBreakStmt(stmt: Stmt.Break): String {
+        return "break"
+    }
+
+    override fun visitExpressionStmt(stmt: Stmt.Expression): String {
+        return stmt.expression.accept(this)
+    }
+
+    override fun visitFunctionStmt(stmt: Stmt.Function): String {
+        indentationLevel++
+        val function = listOf(
+            "function ${stmt.name.lexeme}",
+            stmt.params.joinToString { it.lexeme },
+            indent(
+                stmt.body.joinToString("\n") { it.accept(this) }
+            )
+        )
+        indentationLevel--
+        return function.joinToString("\n")
+    }
+
+    override fun visitIfStmt(stmt: Stmt.If): String {
+        indentationLevel++
+        val statement = listOf(
+            "if",
+            indent(stmt.condition.accept(this)),
+            indent(stmt.thenBranch.accept(this)),
+            indent(stmt.elseBranch?.let { it.accept(this) } ?: ""),
+        )
+        indentationLevel--
+        return statement.joinToString("\n")
+    }
+
+    override fun visitPrintStmt(stmt: Stmt.Print): String {
+        indentationLevel++
+        val print = listOf(
+            "print",
+            indent(stmt.expression.accept(this)),
+        )
+        indentationLevel--
+        return print.joinToString("\n")
+    }
+
+    override fun visitReturnStmt(stmt: Stmt.Return): String {
+        indentationLevel++
+        val ret = listOf(
+            "return",
+            indent(stmt.value.accept(this)),
+        )
+        indentationLevel--
+        return ret.joinToString("\n")
+    }
+
+    override fun visitVarStmt(stmt: Stmt.Var): String {
+        indentationLevel++
+        val varStmt = listOf(
+            "var",
+            indent(stmt.name.lexeme),
+            indent(stmt.initializer.accept(this)),
+        )
+        indentationLevel--
+        return varStmt.joinToString("\n")
+    }
+
+    override fun visitWhileStmt(stmt: Stmt.While): String {
+        TODO("Not yet implemented")
+    }
+
 }
