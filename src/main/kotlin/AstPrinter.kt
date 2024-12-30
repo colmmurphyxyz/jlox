@@ -43,7 +43,7 @@ class AstPrinter : Expr.Visitor<String>, Stmt.Visitor<String> {
     override fun visitCallExpr(expr: Expr.Call): String {
         indentationLevel++
         val call = listOf(
-            expr.callee.accept(this),
+            "call" + expr.callee.accept(this),
             (expr.arguments.map { indent(it.accept(this)) }).joinToString("\n")
         )
         indentationLevel--
