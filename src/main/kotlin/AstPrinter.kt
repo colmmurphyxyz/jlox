@@ -53,8 +53,9 @@ class AstPrinter : Expr.Visitor<String>, Stmt.Visitor<String> {
     override fun visitGroupingExpr(expr: Expr.Grouping): String {
         indentationLevel++
         val grouping = listOf(
-            "grouping",
-            indent(expr.expression.accept(this))
+            "(",
+            indent(expr.expression.accept(this)),
+            ")",
         )
         indentationLevel--
         return grouping.joinToString("\n")
@@ -78,8 +79,7 @@ class AstPrinter : Expr.Visitor<String>, Stmt.Visitor<String> {
     override fun visitUnaryExpr(expr: Expr.Unary): String {
         indentationLevel++
         val unary = listOf(
-            "unary",
-            indent(expr.operator.lexeme),
+            expr.operator.lexeme,
             indent(expr.right.accept(this))
         )
         indentationLevel--
@@ -112,10 +112,10 @@ class AstPrinter : Expr.Visitor<String>, Stmt.Visitor<String> {
         indentationLevel++
         val function = listOf(
             "function ${stmt.name.lexeme}",
-            stmt.params.joinToString { it.lexeme },
-            indent(
-                stmt.body.joinToString("\n") { it.accept(this) }
-            )
+            indent("params"),
+            stmt.params.joinToString("\n") { indent(indent(it.lexeme)) },
+            indent("body"),
+            stmt.body.joinToString("\n") { indent(indent(it.accept(this))) },
         )
         indentationLevel--
         return function.joinToString("\n")
@@ -165,7 +165,15 @@ class AstPrinter : Expr.Visitor<String>, Stmt.Visitor<String> {
     }
 
     override fun visitWhileStmt(stmt: Stmt.While): String {
-        TODO("Not yet implemented")
+        indentationLevel++
+        val whileStmt = listOf(
+            "while",
+            indent(stmt.condition.accept(this)),
+            "body",
+            stmt.Body.accept(this),
+        )
+        indentationLevel--
+        return whileStmt.joinToString("\n")
     }
 
 }
