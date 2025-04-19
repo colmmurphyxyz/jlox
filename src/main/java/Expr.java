@@ -88,8 +88,8 @@ public abstract class Expr {
     }
 
     public static class Get extends Expr {
-        Get(Expr Object, Token name) {
-            this.Object = Object;
+        Get(Expr object, Token name) {
+            this.object = object;
             this.name = name;
         }
 
@@ -98,7 +98,7 @@ public abstract class Expr {
             return visitor.visitGetExpr(this);
         }
 
-        final Expr Object;
+        final Expr object;
         final Token name;
     }
 
