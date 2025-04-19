@@ -23,10 +23,12 @@ exprClasses = [
     Class "Variable" [Field "Token" "name"],
     Class "Binary" [Field "Expr" "left", Field "Token" "operator", Field "Expr" "right"],
     Class "Call" [Field "Expr" "callee", Field "Token" "paren", Field "List<Expr>" "arguments"],
-    Class "Get" [Field "Expr" "Object", Field "Token" "name"],
+    Class "Get" [Field "Expr" "object", Field "Token" "name"],
     Class "Grouping" [Field "Expr" "expression"],
     Class "Literal" [Field "Object" "value"],
     Class "Logical" [Field "Expr" "left", Field "Token" "operator", Field "Expr" "right"],
+    Class "Set" [Field "Expr" "object", Field "Token" "name", Field "Expr" "value"],
+    Class "This" [Field "Token" "keyword"],
     Class "Unary" [Field "Token" "operator", Field "Expr" "right"],
     Class "Ternary" [Field "Expr" "condition", Field "Expr" "left", Field "Expr" "right"]
     ]
