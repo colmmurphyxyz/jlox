@@ -28,6 +28,7 @@ exprClasses = [
     Class "Literal" [Field "Object" "value"],
     Class "Logical" [Field "Expr" "left", Field "Token" "operator", Field "Expr" "right"],
     Class "Set" [Field "Expr" "object", Field "Token" "name", Field "Expr" "value"],
+    Class "Super" [Field "Token" "keyword", Field "Token" "method"],
     Class "This" [Field "Token" "keyword"],
     Class "Unary" [Field "Token" "operator", Field "Expr" "right"],
     Class "Ternary" [Field "Expr" "condition", Field "Expr" "left", Field "Expr" "right"]

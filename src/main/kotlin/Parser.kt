@@ -41,6 +41,11 @@ class Parser(
 
     private fun classDeclaration(): Stmt {
         val name = consume(IDENTIFIER, "Expect class name.")
+        var superclass: Expr.Variable? = null
+        if (match(LESS)) {
+            consume(IDENTIFIER, "Expect superclass name.")
+            superclass = Expr.Variable(previous())
+        }
         consume(LEFT_BRACE, "Expect '{' before class body.")
         val methods = ArrayList<Stmt.Function>()
         while (!check(RIGHT_BRACE) && !isAtEnd) {
@@ -49,7 +54,7 @@ class Parser(
 
         consume(RIGHT_BRACE, "Expect '}' after class body.")
 
-        return Stmt.Class(name, methods)
+        return Stmt.Class(name, superclass, methods)
     }
 
     private fun statement(): Stmt {
@@ -363,6 +368,13 @@ class Parser(
 
         if (match(NUMBER, STRING)) {
             return Expr.Literal(previous().literal)
+        }
+
+        if (match(SUPER)) {
+            val keyword = previous()
+            consume(DOT, "Expect '.' after 'super'.")
+            val method = consume(IDENTIFIER, "Expect superclass method name.")
+            return Expr.Super(keyword, method)
         }
 
         if (match(THIS)) return Expr.This(previous())

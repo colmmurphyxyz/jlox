@@ -1,5 +1,5 @@
 class Environment(
-    private val enclosing: Environment?
+    val enclosing: Environment?
 ) {
 
     // secondary constructor
