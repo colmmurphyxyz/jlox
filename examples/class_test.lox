@@ -1,0 +1,43 @@
+class DevonshireCream {
+    serveOn() {
+        return "scone";
+    }
+}
+
+print DevonshireCream;
+
+class Bagel {}
+var bagel = Bagel();
+print bagel;
+
+class Bacon {
+    eat() {
+        print "crunch crunch crunch";
+    }
+}
+
+Bacon().eat();
+
+class Egotist {
+    speak() {
+        print this;
+    }
+}
+
+var method = Egotist().speak;
+method();
+
+class Thing {
+    getCallback() {
+        fun localFunction() {
+            print this;
+        }
+
+        return localFunction;
+    }
+}
+
+var callback = Thing().getCallback();
+callback();
+
+print "finish";

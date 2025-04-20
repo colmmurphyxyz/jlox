@@ -50,6 +50,17 @@ class AstPrinter : Expr.Visitor<String>, Stmt.Visitor<String> {
         return call.joinToString("\n")
     }
 
+    override fun visitGetExpr(expr: Expr.Get): String {
+        indentationLevel++
+        val get = listOf(
+            "get",
+            expr.`object`?.accept(this),
+            expr.name?.lexeme
+        )
+        indentationLevel--
+        return get.joinToString("\n")
+    }
+
     override fun visitGroupingExpr(expr: Expr.Grouping): String {
         indentationLevel++
         val grouping = listOf(
@@ -76,6 +87,19 @@ class AstPrinter : Expr.Visitor<String>, Stmt.Visitor<String> {
         return expression.joinToString("\n")
     }
 
+    override fun visitSetExpr(expr: Expr.Set): String {
+        indentationLevel++
+        val set = listOf(
+            "set",
+        )
+        indentationLevel--
+        return set.joinToString("\n")
+    }
+
+    override fun visitThisExpr(expr: Expr.This?): String {
+        return "this"
+    }
+
     override fun visitUnaryExpr(expr: Expr.Unary): String {
         indentationLevel++
         val unary = listOf(
@@ -98,6 +122,16 @@ class AstPrinter : Expr.Visitor<String>, Stmt.Visitor<String> {
         )
         indentationLevel--
         return block.joinToString("\n")
+    }
+
+    override fun visitClassStmt(stmt: Stmt.Class?): String {
+        indentationLevel++
+        val classStmt = listOf(
+            "class ${stmt?.name?.lexeme}",
+            stmt?.methods?.joinToString("\n") { indent(it.accept(this)) } ?: "",
+        )
+        indentationLevel--
+        return classStmt.joinToString("\n")
     }
 
     override fun visitBreakStmt(stmt: Stmt.Break): String {

@@ -45,7 +45,7 @@ class Interpreter : Expr.Visitor<Any>, Stmt.Visitor<Unit> {
     override fun visitLiteralExpr(expr: Expr.Literal): Any? =
         expr.value
 
-    override fun visitLogicalExpr(expr: Expr.Logical): Any? {
+    override fun visitLogicalExpr(expr: Expr.Logical): Any {
         val left = evaluate(expr.left)
 
         if (expr.operator.type == OR) {
@@ -58,6 +58,21 @@ class Interpreter : Expr.Visitor<Any>, Stmt.Visitor<Unit> {
 
         return evaluate(expr.right)
     }
+
+    override fun visitSetExpr(expr: Expr.Set): Any {
+        val obj = evaluate(expr.`object`)
+
+        if (obj !is LoxInstance) {
+            throw RuntimeError(expr.name, "Only instances have fields.")
+        }
+
+        val value = evaluate(expr.value)
+        obj.set(expr.name, value)
+        return value
+    }
+
+    override fun visitThisExpr(expr: Expr.This): Any?
+        = lookupVariable(expr.keyword, expr)
 
     override fun visitUnaryExpr(expr: Expr.Unary): Any? {
         val right = evaluate(expr.right)
@@ -175,6 +190,15 @@ class Interpreter : Expr.Visitor<Any>, Stmt.Visitor<Unit> {
         return callee.call(this, arguments)
     }
 
+    override fun visitGetExpr(expr: Expr.Get): Any? {
+        val obj = evaluate(expr.`object`)
+        if (obj is LoxInstance) {
+            return (obj as LoxInstance).get(expr.name)
+        }
+
+        throw RuntimeError(expr.name , "Only instances have properties")
+    }
+
     override fun visitTernaryExpr(expr: Expr.Ternary): Any? {
         return if (isTruthy(evaluate(expr.condition))) {
             expr.left.accept(this)
@@ -237,6 +261,19 @@ class Interpreter : Expr.Visitor<Any>, Stmt.Visitor<Unit> {
 
     override fun visitBlockStmt(stmt: Stmt.Block) {
         executeBlock(stmt.statements, Environment(environment))
+    }
+
+    override fun visitClassStmt(stmt: Stmt.Class) {
+        environment.define(stmt.name.lexeme, null)
+
+        val methods = HashMap<String, LoxFunction>()
+        for (method in stmt.methods) {
+            val function = LoxFunction(method, environment, method.name.lexeme == "init")
+            methods[method.name.lexeme] = function
+        }
+
+        val klass = LoxClass(stmt.name.lexeme, methods)
+        environment.define(stmt.name.lexeme, klass)
     }
 
     override fun visitExpressionStmt(stmt: Stmt.Expression) {
