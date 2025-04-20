@@ -36,7 +36,7 @@ exprClasses = [
 stmtClasses :: [Class]
 stmtClasses = [
     Class "Block" [Field "List<Stmt>" "statements"],
-    Class "Class" [Field "Token" "name", Field "List<Stmt.Function>" "methods"],
+    Class "Class" [Field "Token" "name", Field "Expr.Variable" "superclass", Field "List<Stmt.Function>" "methods"],
     Class "Break" [],
     Class "Expression" [Field "Expr" "expression"],
     Class "Function" [Field "Token" "name", Field "List<Token>" "params", Field "List<Stmt>" "body"],
