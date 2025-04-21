@@ -39,7 +39,7 @@ class Lox {
             val printStream = PrintStream(buffer)
             // Save the original System.out
             val originalOut = System.out
-            var output = ""
+            val output: String
 
             try {
                 // Redirect System.out to our printStream
