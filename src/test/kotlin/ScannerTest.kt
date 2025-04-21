@@ -6,8 +6,6 @@ import kotlin.test.assertContentEquals
 
 class ScannerTest {
 
-    private lateinit var scanner: Scanner
-
     @Test
     fun testInlineComments() {
         val source = "var x = 123 // this is a comment and should be discarded"
@@ -46,7 +44,7 @@ class ScannerTest {
         val source = "var x/* ... */ = 3"
         val tokens = Scanner(source).scanTokens()
         val types = tokens.map { it.type }.toTypedArray()
-        assertContentEquals(arrayOf<TokenType>(VAR, IDENTIFIER, EQUAL, NUMBER, EOF), types)
+        assertContentEquals(arrayOf(VAR, IDENTIFIER, EQUAL, NUMBER, EOF), types)
     }
 
     @Test
