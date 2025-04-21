@@ -1,6 +1,4 @@
-import java.io.BufferedReader
-import java.io.IOException
-import java.io.InputStreamReader
+import java.io.*
 import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -12,7 +10,9 @@ class Lox {
         private val interpreter = Interpreter()
 
         private var hadError = false
+        private var errorMessage = ""
         private var hadRuntimeError = false
+        private var runtimeErrorMessage = ""
 
         fun main(args: Array<String>) {
             if (args.size > 1) {
@@ -31,6 +31,52 @@ class Lox {
             runLox(String(bytes, Charset.defaultCharset()))
             if (hadError) exitProcess(65)
             if (hadRuntimeError) exitProcess(70)
+        }
+
+        fun runFileWithOutput(code: String): String {
+            // Create a buffer and a new PrintStream to wrap it
+            val buffer = ByteArrayOutputStream()
+            val printStream = PrintStream(buffer)
+            // Save the original System.out
+            val originalOut = System.out
+            var output = ""
+
+            try {
+                // Redirect System.out to our printStream
+                System.setOut(printStream)
+
+                val tokens = Scanner(code).scanTokens()
+
+                val statements = Parser(tokens).parse()
+                if (hadError) {
+                    return errorMessage
+                }
+
+                Resolver(interpreter).resolve(statements)
+                if (hadError) {
+                    return errorMessage
+                }
+
+                interpreter.interpret(statements)
+                if (hadRuntimeError) {
+                    return runtimeErrorMessage
+                }
+                if (hadError) {
+                    return errorMessage
+                }
+
+                printStream.flush()
+                output = buffer.toString()
+            } finally {
+                // Restore the original System.out
+                System.setOut(originalOut)
+                hadError = false
+                errorMessage = ""
+                hadRuntimeError = false
+                runtimeErrorMessage = ""
+            }
+
+            return output
         }
 
         @Throws(IOException::class)
@@ -79,24 +125,27 @@ class Lox {
         }
 
         fun error(line: Int, message: String) {
+            errorMessage = message
             report(line, "", message)
         }
 
         fun runtimeError(error: RuntimeError) {
             System.err.println("${error.message}\n[line ${error.token.line}]")
+            runtimeErrorMessage = error.message
             hadRuntimeError = true
         }
 
         private fun report(line: Int, where: String, message: String) {
             System.err.println("[line $line] Error $where: $message")
             hadError = true
+            errorMessage = "Error $where: $message"
         }
 
         fun error(token: Token, message: String) {
             if (token.type == TokenType.EOF) {
-                report(token.line, " at end", message)
+                report(token.line, "at end", message)
             } else {
-                report(token.line, " at '${token.lexeme}'", message)
+                report(token.line, "at '${token.lexeme}'", message)
             }
         }
     }

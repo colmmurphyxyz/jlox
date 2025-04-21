@@ -346,7 +346,6 @@ class Interpreter : Expr.Visitor<Any>, Stmt.Visitor<Unit> {
     }
 
     override fun visitWhileStmt(stmt: Stmt.While) {
-        println("visitWhileStmt")
         while (isTruthy(evaluate(stmt.condition))) {
             try {
                 execute(stmt.Body)
