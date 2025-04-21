@@ -226,8 +226,7 @@ class Parser(
                 val name = expr.name
                 return Expr.Assign(name, value)
             } else if (expr is Expr.Get) {
-                val get = expr as Expr.Get
-                return Expr.Set(get.`object`, get.name, value)
+                return Expr.Set(expr.`object`, expr.name, value)
             }
 
             error(equals, "Invalid assignment target.")
@@ -253,20 +252,6 @@ class Parser(
             val operator = previous()
             val right = equality()
             expr = Expr.Logical(expr, operator, right)
-        }
-
-        return expr
-    }
-
-    private fun ternary(): Expr {
-        // TODO: Ternary statements should not be instances of `Expr` and should not be evaluated by the parser
-        var expr = equality()
-
-        if (match(QUESTION_MARK)) {
-            val left = expression()
-            consume(COLON, "Expect ':' after '?'")
-            val right = expression()
-            expr = Expr.Ternary(expr, left, right)
         }
 
         return expr
