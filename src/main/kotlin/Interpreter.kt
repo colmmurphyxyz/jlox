@@ -190,7 +190,7 @@ class Interpreter : Expr.Visitor<Any>, Stmt.Visitor<Unit> {
         val arguments = expr.arguments.map(::evaluate)
 
         if (callee !is LoxCallable) {
-            throw RuntimeError(expr.paren, "Can only call functions and classes")
+            throw RuntimeError(expr.paren, "Can only call functions and classes.")
         }
         if (arguments.size != callee.arity) {
             throw RuntimeError(expr.paren, "Expected ${callee.arity} arguments but got ${arguments.size}.")
