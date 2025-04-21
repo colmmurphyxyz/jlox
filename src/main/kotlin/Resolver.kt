@@ -50,7 +50,7 @@ class Resolver(
     }
 
     private fun beginScope() {
-        scopes.push(mutableMapOf<String, Boolean>())
+        scopes.push(mutableMapOf())
     }
 
     private fun endScope() {
@@ -97,7 +97,7 @@ class Resolver(
 
         if (stmt.superclass != null && stmt.name.lexeme == stmt.superclass.name.lexeme) {
             Lox.error(stmt.superclass.name,
-                "A class can't inherit from itself.");
+                "A class can't inherit from itself.")
         }
 
         if (stmt.superclass != null) {
