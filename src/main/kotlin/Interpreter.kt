@@ -14,7 +14,7 @@ class Interpreter : Expr.Visitor<Any>, Stmt.Visitor<Unit> {
         globals.define("clock", object : LoxCallable {
             override val arity: Int = 0
             override fun call(interpreter: Interpreter, arguments: List<Any>) =
-                (System.currentTimeMillis() / 1000.0).toDouble()
+                (System.currentTimeMillis() / 1000.0)
 
             override fun toString(): String =
                 "<native fn clock>"
@@ -202,7 +202,7 @@ class Interpreter : Expr.Visitor<Any>, Stmt.Visitor<Unit> {
     override fun visitGetExpr(expr: Expr.Get): Any? {
         val obj = evaluate(expr.`object`)
         if (obj is LoxInstance) {
-            return (obj as LoxInstance).get(expr.name)
+            return obj.get(expr.name)
         }
 
         throw RuntimeError(expr.name , "Only instances have properties")
