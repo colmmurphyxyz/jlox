@@ -7,7 +7,7 @@ class CharacterUtilsTest {
         assertTrue('0'.isArabicDigit)
         assertTrue('9'.isArabicDigit)
         assertTrue('5'.isArabicDigit)
-        assertTrue('a'.isArabicDigit)
+        assertFalse('a'.isArabicDigit)
         assertFalse('x'.isArabicDigit)
     }
 
